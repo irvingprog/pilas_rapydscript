@@ -3,16 +3,6 @@
         child.prototype = new parent;
         child.prototype.constructor = child;
     }
-    function _$rapyd$_print() {
-        var args, output;
-        args = [].slice.call(arguments, 0);
-        output = JSON.stringify(args);
-        if ("console" in window) console.log(output.substr(1, output.length-2));
-    }
-    function _$rapyd$_in(val, arr) {
-        if (arr instanceof Array || typeof arr === "string") return arr.indexOf(val) != -1;
-        else return val in arr;
-    }
     function Imagen(imagen){
         var self = this;
         self.ruta = imagen;
@@ -29,8 +19,8 @@
         var self = this;
         self.recursos = {};
         self.loader = new PxLoader();
-        self.cargar_recursos();
         self.imagenes_solicitadas = 0;
+        self.cargar_recursos();
         self.loader.start();
     };
 
@@ -48,12 +38,7 @@
 
     Imagenes.prototype.cargar = function cargar(nombre){
         var self = this;
-        _$rapyd$_print(self.recursos);
-        if (_$rapyd$_in(nombre, self.recursos)) {
-            return new Imagen(self.recursos[nombre]);
-        } else {
-            _$rapyd$_print("no se encontrar la imagen");
-        }
+        return new Imagen(self.recursos[nombre]);
     };
 
     function Actor(imagen, x, y){
@@ -63,16 +48,26 @@
         var imagenes;
         imagenes = new Imagenes();
         self.imagen = imagenes.cargar(imagen);
-        self.x = x;
-        self.y = y;
-        _$rapyd$_print(self.imagen);
         self.crear_sprite();
+        self.y = y;
+        self.__defineGetter__("x", self.get_x);
+        self.__defineSetter__("x", self.set_x);
     };
 
 
     Actor.prototype.crear_sprite = function crear_sprite(){
         var self = this;
         self.sprite = self.imagen.instanciar();
+    };
+
+    Actor.prototype.get_x = function get_x(){
+        var self = this;
+        return self.sprite.x;
+    };
+
+    Actor.prototype.set_x = function set_x(value){
+        var self = this;
+        self.sprite.x = value;
     };
 
     function Aceituna(){
@@ -90,9 +85,13 @@
 
     View.prototype.update = function update(){
         var self = this;
-        var text;
+        var text, aceituna;
         text = new createjs.Text("Hello World!", "36px Arial", "#777");
+        aceituna = new Aceituna();
+        self.stage.addChild(aceituna.sprite);
         self.stage.addChild(text);
+        console.log(aceituna.x);
+        aceituna.x = 100;
         text.x = 360;
         text.y = 200;
         self.stage.update();

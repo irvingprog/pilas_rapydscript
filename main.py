@@ -10,8 +10,9 @@ class Imagenes:
     def __init__(self):
         self.recursos = {}
         self.loader = new PxLoader()
-        self.cargar_recursos()
         self.imagenes_solicitadas = 0
+
+        self.cargar_recursos()
 
         self.loader.start()
 
@@ -23,22 +24,28 @@ class Imagenes:
         self.imagenes_solicitadas +=1
 
     def cargar(self, nombre):
-        if nombre in self.recursos:
-            return Imagen(self.recursos[nombre])
-        else:
-            print("no se encontrar la imagen")
+        return Imagen(self.recursos[nombre])
+
 
 class Actor:
     def __init__(self, imagen, x=0, y=0):
-        imagenes  =Imagenes()
+        imagenes = Imagenes()
         self.imagen = imagenes.cargar(imagen)
-        self.x = x;
-        self.y = y;
-        print(self.imagen)
         self.crear_sprite()
+        #self.x = x;
+        self.y = y;
 
+        self.__defineGetter__('x', self.get_x)
+        self.__defineSetter__('x', self.set_x)
+        
     def crear_sprite(self):
         self.sprite = self.imagen.instanciar()
+
+    def get_x(self):
+        return self.sprite.x
+
+    def set_x(self, value):
+        self.sprite.x = value
 
 class Aceituna(Actor):
     def __init__(self):
@@ -52,8 +59,12 @@ class View:
     def update(self):
         text = new createjs.Text("Hello World!", "36px Arial", "#777")
 
+        aceituna = Aceituna()
+        self.stage.addChild(aceituna.sprite)
         self.stage.addChild(text)
 
+        console.log(aceituna.x)
+        aceituna.x = 100;
         text.x = 360
         text.y = 200
 
@@ -61,7 +72,8 @@ class View:
 
 window.init = def():
     canvas = document.getElementById('acanvas')
-    game = new View(canvas)
+    game = View(canvas)
+
     game.update()
 
 
